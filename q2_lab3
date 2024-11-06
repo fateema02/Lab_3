@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+#define InitialBalance 1000;
+
+int balance = InitialBalance;
+
+
+
+
+int main() {
+   int transactions[] = {200, -150, -500, -400, -50, -200, 300};
+    n = 7
+   int tobeprocessed[100];
+
+// TRANSACTION LOOP
+    for (int i = 0; i<n; i++) {  
+        int transaction = transactions[i];
+
+        if (transaction<0 && transactions > balance || balance == 0 ){
+        printf("Invalid Transaction. No further transactions will be processed");
+        }
+
+
+}
+
+ balance += transaction;
