@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define NUM_TEAMS 5
+#define SQUAD_SIZE 20
+
+struct player_age {
+    int day;
+    int month;
+    int year;
+}
+
+struct player_t {
+    char name[25];
+    int kit_num;             //range is 1-99
+    char club;
+    struct player_age;
+    char position;
+}
+
+struct 
+
+int main()
+{
+    printf("Hello World");
+
+    return 0;
+}
