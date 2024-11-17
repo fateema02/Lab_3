@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> /* for strings in the code */
@@ -32,6 +31,7 @@ typedef struct {
 void display_menu();
 void enroll_club(team_info teams[], int *num_teams);
 void add_player(team_info teams[], int num_teams);
+void search_update(team_info teams[], int num_teams);
 void display_club_statistics(team_info teams[], int num_teams);
 
 /* Main */
@@ -49,15 +49,16 @@ int main() {
         switch (choice) {
             case 1: enroll_club(teams, &num_teams); break;
             case 2: add_player(teams, num_teams); break;
-            case 3: display_club_statistics(teams, num_teams); break;
-            case 4: printf("Exiting program...\n"); return 0;
+            case 3: search_update(teams, num_teams); break;
+            case 4: display_club_statistics(teams, num_teams); break;
+            case 5: printf("Exiting program...\n"); return 0;
             default: printf("Invalid choice. Exiting program...\n"); return 0;
         }
     }
     return 0;
 }
 
-/* Displaying the menu */
+/* Display the menu */
 void display_menu() {
     printf("***Welcome to the team league application***\n 1. Enroll into a club\n 2. Add a player to the team/club\n 3. Search or update a player's information\n 4. Display club statistics\n 5. Exit\n ");
 }
@@ -76,6 +77,70 @@ void enroll_club(team_info teams[], int *num_teams) {
     (*num_teams)++; /* updating teams enrolled each time to keep a count */
     printf("Your club enrolment is successful.\n");
 }
+
+/* Search and updating players */
+
+void search_update(team_info teams[], int num_teams) {
+    char search_name[26];
+    int search_kit_num;
+
+    printf("Find player by:\n 1. Name \n 2. Kit Number: \n");
+    int findChoice;
+    scanf("%d", &findChoice);
+    getchar();
+
+    if (findChoice == 1) {
+        printf("Name of the player you want to find: ");
+        fgets(search_name, 26, stdin);
+        search_name[strcspn(search_name, "\n")] = 0;  
+    } else if (findChoice == 2) {
+        printf("Enter player's kit number to search: ");
+        scanf("%d", &search_kit_num);
+        getchar();
+    } else {
+        printf("Invalid option.\n");
+        return;
+    }
+
+    /* searching all teams for the player */
+    int found = 0;
+    for (int i = 0; i < num_teams; i++) {
+        for (int j = 0; j < teams[i].active_size; j++) {
+            if ((findChoice == 1 && simple_strcmp(teams[i].players[j].name, search_name) == 0) || 
+                (findChoice == 2 && teams[i].players[j].kit_num == search_kit_num)) {
+                
+                printf("Player found: %s (Kit Number: %d)\n", teams[i].players[j].name, teams[i].players[j].kit_num);
+                printf("Position: %s, DOB: %d/%d/%d\n", teams[i].players[j].position, teams[i].players[j].birthdate.day,
+                       teams[i].players[j].birthdate.month, teams[i].players[j].birthdate.year);
+                
+                // Update player details
+                printf("Update player position: ");
+                fgets(teams[i].players[j].position, 21, stdin);
+                teams[i].players[j].position[strcspn(teams[i].players[j].position, "\n")] = 0;
+                
+                found = 1;
+                break;
+            }
+        }
+        if (found) break;
+    }
+
+    if (!found) {
+        printf("Player not found.\n");
+    }
+}
+
+int simple_strcmp(const char *s1, const char *s2) {
+    while (*s1 && *s2) {
+        if (*s1 != *s2) {
+            return 0;  
+        }
+        s1++;
+        s2++;
+    }
+    return (*s1 == *s2);  
+}
+
 
 /* Adding players */
 void add_player(team_info teams[], int num_teams) {
