@@ -1,29 +1,151 @@
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> /* for strings in the code */
 
-#define NUM_TEAMS 5
-#define SQUAD_SIZE 20
+#define NUM_TEAMS 6  /* Max number of teams*/
+#define SQUAD_SIZE 20 /* Max number of players per team */
 
-struct player_age {
+/* Player's date of birth */
+typedef struct {
     int day;
     int month;
     int year;
-}
+} player_age;
 
-struct player_t {
-    char name[25];
-    int kit_num;             //range is 1-99
-    char club;
-    struct player_age;
-    char position;
-}
+/* Player structure */
+typedef struct {  
+    char name[26];         /* Player's full name (max 25 chars)*/
+    int kit_num;           /* Player's kit number (1-99) */
+    player_age birthdate;  /* Player's birthdate*/
+    char position[21];     /* Player's position (max 20 chars) */
+} player_info;
 
-struct 
+/* Team structure */
+typedef struct {
+    char name[21];        /* Team name (max 20 chars) */
+    player_info players[SQUAD_SIZE]; /* Array of players */
+    int active_size;      /* Activve players */
+} team_info;
 
-int main()
-{
-    printf("Hello World");
+/* Function prototypes */
+void display_menu();
+void enroll_club(team_info teams[], int *num_teams);
+void add_player(team_info teams[], int num_teams);
+void display_club_statistics(team_info teams[], int num_teams);
 
+/* Main */
+int main() {
+    team_info teams[NUM_TEAMS]; /* Team array */
+    int num_teams = 0;        /* Keeping a count on the number of enrolled teams */
+
+    while (1) {
+        display_menu();
+        int choice;
+        scanf("%d", &choice);
+        getchar(); 
+ 
+ /* Calling the functions above */
+        switch (choice) {
+            case 1: enroll_club(teams, &num_teams); break;
+            case 2: add_player(teams, num_teams); break;
+            case 3: display_club_statistics(teams, num_teams); break;
+            case 4: printf("Exiting program...\n"); return 0;
+            default: printf("Invalid choice. Exiting program...\n"); return 0;
+        }
+    }
     return 0;
+}
+
+// Display the menu
+void display_menu() {
+    printf("***Welcome to the team league application***\n 1. Enroll into a club\n 2. Add a player to the team/club\n 3. Search or update a player's information\n 4. Display club statistics\n 5. Exit\n ");
+}
+
+/* Signing up for a club */
+void enroll_club(team_info teams[], int *num_teams) {
+    if (*num_teams >= NUM_TEAMS) {
+        printf("Club is full\n");
+        return;
+    }
+
+    printf("Enter the club name (within 20 characters): ");
+    scanf("%20[^\n]", teams[*num_teams].name); /* Reading only upto 20 characters */
+
+    teams[*num_teams].active_size = 0; /* No current players enrolled */
+    (*num_teams)++; /* updating teams enrolled each time to keep a count */
+    printf("Your club enrolment is successful.\n");
+}
+
+/* Adding players */
+void add_player(team_info teams[], int num_teams) {
+    if (num_teams == 0) {
+        printf("No clubs signed up yet.\n");
+        return;
+    }
+
+    /* Listing clubs available */
+    printf("Enter the club name you want to opt for:\n");
+    for (int i = 0; i < num_teams; i++) {
+        printf("%d. %s\n", i + 1, teams[i].name);
+    }
+
+    char club_name[21];
+    scanf("%20[^\n]", club_name);  /* Reading 20 characters max */
+    getchar();
+
+    /* Finding desired clubs */
+    int club_index = -1;
+    for (int i = 0; i < num_teams; i++) {
+        if (strcmp(teams[i].name, club_name) == 0) {
+            club_index = i;
+            break;
+        }
+    }
+    if (club_index == -1) {
+        printf("Club doesn't exist.\n");
+        return;
+    }
+
+    if (teams[club_index].active_size >= SQUAD_SIZE) {
+        printf("Club is currently full.\n");
+        return;
+    }
+
+    /* Entering player details */
+    player_info new_player;
+    printf("Enter player's full name (max 25 characters): ");
+    scanf("%25[^\n]", new_player.name);  /* 25 max characters */
+
+    printf("Enter player's kit number (1-99): ");
+    scanf("%d", &new_player.kit_num);
+    getchar(); 
+
+    printf("Enter player's date of birth (DD MM YYYY): ");
+    scanf("%d %d %d", &new_player.birthdate.day, &new_player.birthdate.month, &new_player.birthdate.year);
+    getchar(); 
+
+    printf("Enter player's position (max 20 characters): ");
+    scanf("%20[^\n]", new_player.position);  /* 20 characters max */
+
+    /* Adding players to teams */
+    teams[club_index].players[teams[club_index].active_size++] = new_player;
+    printf("Player added successfully.\n");
+}
+
+/* Displaying information about each club */
+void display_club_statistics(team_info teams[], int num_teams) {
+    if (num_teams == 0) {
+        printf("No clubs enrolled yet.\n");
+        return;
+    }
+
+    printf("\nClub Statistics:\n");
+    for (int i = 0; i < num_teams; i++) {
+        printf("Club: %s, Players: %d\n", teams[i].name, teams[i].active_size);
+        for (int j = 0; j < teams[i].active_size; j++) {
+            printf("  Player: %s (Kit Number: %d, Position: %s)\n", teams[i].players[j].name,
+                   teams[i].players[j].kit_num, teams[i].players[j].position);
+        }
+    }
 }
