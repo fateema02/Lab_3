@@ -57,7 +57,7 @@ int main() {
     return 0;
 }
 
-// Display the menu
+/* Displaying the menu */
 void display_menu() {
     printf("***Welcome to the team league application***\n 1. Enroll into a club\n 2. Add a player to the team/club\n 3. Search or update a player's information\n 4. Display club statistics\n 5. Exit\n ");
 }
