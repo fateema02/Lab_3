@@ -1,26 +1,71 @@
 #include <stdio.h>
 
-#define InitialBalance 1000;
+#define MAX_TRANSACTIONS 10  
 
-int balance = InitialBalance;
-
-
-
+/* Function prototypes */
+void process_transactions(int transactions[], int num_transactions, int *balance, int tobeprocessed[], int *tobeprocessed_count);
 
 int main() {
-   int transactions[] = {200, -150, -500, -400, -50, -200, 300};
-    n = 7
-   int tobeprocessed[100];
+    /* Setting initial balance */
+    int balance = 1000;  
 
-// TRANSACTION LOOP
-    for (int i = 0; i<n; i++) {  
-        int transaction = transactions[i];
+    /* Array to store transactions. (-) for withdrawl and (+) for deposit */
+    int transactions[] = {200, -150, -500, -400, -50, -200, 300};
 
-        if (transaction<0 && transactions > balance || balance == 0 ){
-        printf("Invalid Transaction. No further transactions will be processed");
-        }
+    /* Array for unprocessed transactions */
+    int tobeprocessed[MAX_TRANSACTIONS];
+    int tobeprocessed_count = 0;
 
+    /*  Amount Transactions to process */
+    int num_transactions = sizeof(transactions) / sizeof(transactions[0]);
 
+    /* Processing transactions */
+    process_transactions(transactions, num_transactions, &balance, tobeprocessed, &tobeprocessed_count);
+
+    /* Displaying final balance */
+    printf("\nFinal balance: %d AED\n", balance);
+
+    /* Displaying the unprocessed transactions */
+    printf("\nUnprocessed transactions:\n");
+    for (int i = 0; i < tobeprocessed_count; i++) {
+        printf("%d\n", tobeprocessed[i]);
+    }
+
+    return 0;
 }
 
- balance += transaction;
+/* Functions to process the transactions */
+void process_transactions(int transactions[], int num_transactions, int *balance, int tobeprocessed[], int *tobeprocessed_count) {
+    for (int i = 0; i < num_transactions; i++) {
+        int transaction = transactions[i];
+
+        /* Withdrawls and making sure they don't exceed current balance */
+        if (transaction < 0) {
+            if (*balance + transaction < 0) {
+                /* If withdrawl exceeds balance then warning the user and storing it to tobeprocessed array */
+                printf("Warning: Withdrawal of %d AED exceeds current balance of %d AED. This transaction will not be performed.\n", -transaction, *balance);
+                tobeprocessed[*tobeprocessed_count] = transaction;
+                (*tobeprocessed_count)++;
+            } else {
+
+                /* updating the balance */
+                *balance += transaction;
+            }
+
+        } else {  /* Adding deposits to balance */
+            *balance += transaction;  
+        }
+
+        /* Processing stops once balance is 0 or less */
+        if (*balance <= 0) {
+            printf("Balance is 0 or below. No further transactions will be processed.\n");
+            
+            /* Storing failed transactions in tobeprocessed */
+            for (int j = i + 1; j < num_transactions; j++) {
+                tobeprocessed[*tobeprocessed_count] = transactions[j];
+                (*tobeprocessed_count)++;
+            }
+            break;  
+        }
+    }
+}
